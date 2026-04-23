@@ -135,7 +135,7 @@ export default function Home() {
           <div className="flex flex-col gap-3">
             <h2 className="font-medium text-gray-700">Items</h2>
   
-            {items.map((item, i) => (
+            {items.map((_, i) => (
               <div key={i} className="grid grid-cols-3 gap-3">
   
                 <input
