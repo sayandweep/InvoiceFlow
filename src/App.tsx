@@ -162,7 +162,7 @@ export default function Home() {
   if (invoicesLoading) {
     return (
       <p className="text-center mt-10">Loading...</p>
-    );
+    )
   }
 
   return (
