@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { FileText, User} from 'lucide-react';
 
 type Item = {
   name: string;
@@ -11,8 +12,8 @@ type Item = {
 type Invoice = {
   invoice_number: string;
   id: string;
-  user_name: string;
-  issued_to: string;
+  client_name: string;
+  client_mail: string;
   items: {
     name: string;
     price: string;
@@ -29,8 +30,8 @@ export default function Home() {
   const [invoicesLoading, setInvoicesLoading] = useState(true);
 
   const [form, setForm] = useState({
-    user_name: "",
-    issued_to: "",
+    client_name: "",
+    client_mail: "",
     qrFile: null as File | null
   });
 
@@ -139,8 +140,8 @@ export default function Home() {
       .insert([
         {
           invoice_number: invoiceNumber,
-          user_name: form.user_name,
-          issued_to: form.issued_to,
+          client_name: form.client_name,
+          client_mail: form.client_mail,
           items,
           total,
           qr_url: qrUrl
@@ -166,8 +167,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex justify-around items-start py-20 px-10">
-      <div className="w-full max-w-4xl shadow-sm mt-10 mr-5">
+    <div className="min-h-screen bg-black flex justify-around py-20 px-10">
+
+      <div className="w-full max-w-50 mr-5 mt-5 p-5 bg-mist-950 shadow-sm rounded-md h-" id="sidebar">
+        <a href="#"><div className="flex items-center gap-2"><FileText size={15}/>Invoices</div></a>
+        <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
+      </div>
+
+      <div className="w-full max-w-4xl shadow-sm mt-10 mx-5" id="invoice creator">
   
         <h1 className="text-2xl font-semibold mb-6 leading-0">
           Create New Invoice
@@ -180,16 +187,16 @@ export default function Home() {
           {/* Client Info */}
           <div className="grid grid-cols-2 gap-4">
             <input
-              name="user_name"
-              placeholder="Your Name"
+              name="client_name"
+              placeholder="Client Name"
               onChange={handleChange}
               className="p-3 rounded-md focus:outline-none"
               required
             />
   
             <input
-              name="issued_to"
-              placeholder="Issued To"
+              name="client_mail"
+              placeholder="Client Mail"
               onChange={handleChange}
               className="p-3 rounded-md focus:outline-none border"
               required
@@ -271,17 +278,17 @@ export default function Home() {
         </form>
         </div>
       </div>
-      <div className="w-full max-w-2xl p-8 shadow-sm mt-10 rounded-md bg-mist-950 ml-5">
+
+      <div className="w-full max-w-xl p-8 shadow-sm mt-5 rounded-md bg-mist-950 ml-5" id="invoices">
         <table className="w-full text-left">
 
             <thead>
               <tr className="border-b text-stone-500 text-sm">
-                <th className="py-3">Issued To</th>
+                <th className="py-3">Client</th>
                 <th className="py-3">Items</th>
                 <th className="py-3">Quantity</th>
                 <th className="py-3">Total</th>
                 <th className="py-3">Status</th>
-                <th className="py-3">Date</th>
               </tr>
             </thead>
 
@@ -290,7 +297,7 @@ export default function Home() {
                 <tr key={invoice.id} className="border-b">
 
                   <td className="py-4">
-                    {invoice.issued_to}
+                    {invoice.client_name}
                   </td>
 
                   <td className="py-4">
@@ -310,13 +317,9 @@ export default function Home() {
                   </td>
 
                   <td className="py-4">
-                    <span className="px-3 py-1 rounded-full text-sm border">
+                    <span className="px-3 py-1 rounded-full text-sm border border-rose-950 text-rose-700 cursor-pointer">
                       {invoice.status || "unpaid"}
                     </span>
-                  </td>
-
-                  <td className="py-4 text-sm text-gray-500">
-                    {new Date(invoice.created_at).toLocaleDateString()}
                   </td>
 
                 </tr>

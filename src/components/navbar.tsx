@@ -4,7 +4,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { useNavigate } from "react-router-dom";
 
 export function Navbar() {
   return (
@@ -23,12 +22,6 @@ export function Navbar() {
 
 function Logo() {
   return (
-    <div onClick={navHome}><img src="/logo.png" alt="logo" width={40} className="rounded-md"/></div>
+    <a href='/'><div><img src="/logo.png" alt="logo" width={40} className="rounded-md"/></div></a>
   )
-}
-
-
-function navHome() {
-  const navigate = useNavigate();
-  navigate(`/`);
 }

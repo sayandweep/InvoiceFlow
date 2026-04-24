@@ -149,3 +149,12 @@ input[type="number"] {
 input {
   background-color: black;
 }
+
+#sidebar a div {
+  padding: 15px;
+}
+
+#sidebar a div:hover {
+  background-color: rgba(0,0,0,.5);
+  border-radius: 10px;
+}
