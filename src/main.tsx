@@ -12,7 +12,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <BrowserRouter>
-          <Navbar />
+      <Navbar /> 
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/preview/:id" element={<Preview />} />
