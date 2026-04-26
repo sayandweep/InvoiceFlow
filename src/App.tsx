@@ -167,21 +167,26 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex justify-around py-20 px-10">
+    <div className="min-h-screen max-w-full w-full bg-black lg:flex justify-between py-15 lg:py-20 lg:px-10 px-5">
 
-      <div className="w-full max-w-50 mr-5 mt-5 p-5 bg-mist-950 shadow-sm rounded-md h-" id="sidebar">
+
+
+      {/* LARGE MENU */}
+      <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-5 p-5 bg-mist-950 shadow-sm rounded-md hidden lg:block" id="sidebar">
         <a href="#"><div className="flex items-center gap-2"><FileText size={15}/>Invoices</div></a>
         <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
       </div>
 
-      <div className="w-full max-w-4xl shadow-sm mt-10 mx-5" id="invoice creator">
-  
+
+
+      {/* INVOICE CREATOR */}
+      <div className="lg:w-full lg:max-w-4xl max-w-full shadow-sm mt-10 lg:mx-5" id="invoice creator">
         <h1 className="text-2xl font-semibold mb-6 leading-0">
           Create New Invoice
         </h1>
         <h3 className="opacity-50 mb-5">INV-{Date.now()}</h3>
   
-        <div className="bg-mist-950 rounded-md p-10">
+        <div className="bg-mist-950 rounded-md p-5 lg:p-10">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
   
           {/* Client Info */}
@@ -270,7 +275,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-indigo-800 text-white py-3 rounded-md hover:opacity-90 transition"
+            className="bg-linear-to-tr from-green-800 to-green-400 text-white py-3 rounded-md hover:opacity-90 transition"
           >
             {submitting ? "Saving..." : "Create Invoice"}
           </button>
@@ -279,14 +284,16 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="w-full max-w-xl p-8 shadow-sm mt-5 rounded-md bg-mist-950 ml-5" id="invoices">
+
+      {/* ALL INVOICES */}
+      <div className="lg:w-full lg:max-w-xl lg:p-8 p-5 shadow-sm mt-5 rounded-md bg-mist-950 lg:ml-5" id="invoices">
         <table className="w-full text-left">
 
             <thead>
               <tr className="border-b text-stone-500 text-sm">
                 <th className="py-3">Client</th>
-                <th className="py-3">Items</th>
-                <th className="py-3">Quantity</th>
+                <th className="py-3 hidden lg:table-cell">Items</th>
+                <th className="py-3 hidden lg:table-cell">Quantity</th>
                 <th className="py-3">Total</th>
                 <th className="py-3">Status</th>
               </tr>
@@ -300,13 +307,13 @@ export default function Home() {
                     {invoice.client_name}
                   </td>
 
-                  <td className="py-4">
+                  <td className="py-4 hidden lg:table-cell">
                     {invoice.items.map((item, i) => (
                       <p key={i}>{item.name}</p>
                     ))}
                   </td>
 
-                  <td className="py-4">
+                  <td className="py-4 hidden lg:table-cell">
                     {invoice.items.map((item, i) => (
                       <p key={i}>{item.quantity}</p>
                     ))}
