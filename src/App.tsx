@@ -172,7 +172,7 @@ export default function Home() {
 
 
       {/* LARGE MENU */}
-      <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-5 p-5 bg-mist-950 shadow-sm rounded-md hidden lg:block" id="sidebar">
+      <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-5 p-5 bg-mist-900 shadow-sm rounded-md hidden lg:block" id="sidebar">
         <a href="#"><div className="flex items-center gap-2"><FileText size={15}/>Invoices</div></a>
         <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
       </div>
@@ -186,7 +186,7 @@ export default function Home() {
         </h1>
         <h3 className="opacity-50 mb-5">INV-{Date.now()}</h3>
   
-        <div className="bg-mist-950 rounded-md p-5 lg:p-10">
+        <div className="bg-mist-900 rounded-md p-5 lg:p-10">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
   
           {/* Client Info */}
@@ -252,7 +252,7 @@ export default function Home() {
             <button
               type="button"
               onClick={addItem}
-              className="text-sm bg-stone-950 border border-black px-3 py-2 rounded-md w-fit hover:bg-black hover:text-white transition"
+              className="text-sm bg-stone-900 border border-black px-3 py-2 rounded-md w-fit hover:bg-black hover:text-white transition"
             >
               + Add Item
             </button>
@@ -286,7 +286,7 @@ export default function Home() {
 
 
       {/* ALL INVOICES */}
-      <div className="lg:w-full lg:max-w-xl lg:p-8 p-5 shadow-sm mt-5 rounded-md bg-mist-950 lg:ml-5" id="invoices">
+      <div className="lg:w-full lg:max-w-xl lg:p-8 p-5 shadow-sm mt-5 rounded-md bg-mist-900 lg:ml-5" id="invoices">
         <table className="w-full text-left">
 
             <thead>
@@ -324,7 +324,7 @@ export default function Home() {
                   </td>
 
                   <td className="py-4">
-                    <span className="px-3 py-1 rounded-full text-sm border border-rose-950 text-rose-700 cursor-pointer">
+                    <span className="px-3 py-1 rounded-full text-sm border border-rose-900 text-rose-700 cursor-pointer">
                       {invoice.status || "unpaid"}
                     </span>
                   </td>

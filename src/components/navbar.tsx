@@ -17,7 +17,7 @@ import { CircleQuestionMark } from 'lucide-react';
 
 export function Navbar() {
   return (
-    <NavigationMenu className='lg:px-10 lg:py-8 lg:rounded-none text-white max-w-full w-full h-16 fixed top-0 left-0 z-50 p-5 bg-mist-950/50'>
+    <NavigationMenu className='lg:px-10 lg:py-8 lg:rounded-none text-white max-w-full w-full h-16 fixed top-0 left-0 z-50 p-5 bg-mist-900/70 backdrop-blur-sm'>
       <div className="flex items-center justify-between w-full">
         <Logo />
         
