@@ -3,19 +3,28 @@ import { useParams } from "react-router-dom";
 import { supabase } from "./lib/supabase";
 import jsPDF from "jspdf";
 
+import { FileText, User} from 'lucide-react';
+
 type Item = {
   name: string;
-  price: string;
-  quantity: string;
+  price: number;
+  quantity: number;
 };
 
 type Invoice = {
   id: string;
-  user_name: string;
-  issued_to: string;
+  client_name: string;
+  client_mail: string;
   items: Item[];
   total: number;
   qr_url: string;
+  invoice_number: string;
+};
+
+type InvoiceItem = {
+  name: string;
+  price: number;
+  quantity: number;
 };
 
 export default function Preview() {
@@ -49,18 +58,17 @@ export default function Preview() {
     // ----- HEADER -----
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text("INVOICE", 190, 20, { align: "right" });
+    doc.text(`${invoice.invoice_number}`, 20, 20,);
   
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
   
-    doc.text(`From: ${invoice.user_name}`, 20, 30);
-    doc.text(`To: ${invoice.issued_to}`, 20, 38);
+    doc.text(`To: ${invoice.client_name}`, 20, 40);
+    doc.text(`Mail: ${invoice.client_mail}`, 20, 45);
     doc.text(
       `Date: ${new Date().toLocaleDateString()}`,
-      190,
-      30,
-      { align: "right" }
+      20,
+      25,
     );
   
     // ----- TABLE HEADER -----
@@ -70,7 +78,7 @@ export default function Preview() {
   
     doc.text("Item", 20, y);
     doc.text("Price", 120, y, { align: "right" });
-    doc.text("Qty", 150, y, { align: "right" });
+    doc.text("Quantity", 150, y, { align: "right" });
     doc.text("Total", 190, y, { align: "right" });
   
     doc.line(20, y + 2, 190, y + 2);
@@ -97,14 +105,18 @@ export default function Preview() {
     y += 10;
   
     doc.setFont("helvetica", "bold");
-  
-    doc.text("Total:", 150, y, { align: "right" });
+    doc.setFontSize(15);
+    doc.text("Total:", 190, y, { align: "right" });
+
+    y += 8;
+    doc.setFontSize(20);
     doc.text(`${invoice.total} INR`, 190, y, { align: "right" });
   
     // ----- QR SECTION -----
     y += 20;
   
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
     doc.text("Scan to Pay:", 20, y);
   
     if (invoice.qr_url) {
@@ -114,14 +126,14 @@ export default function Preview() {
   
       img.onload = () => {
         doc.addImage(img, "PNG", 20, y + 5, 50, 50);
-        doc.save("invoice.pdf");
+        doc.save(`INV-${invoice.invoice_number}`);
       };
   
       img.onerror = () => {
-        doc.save("invoice.pdf");
+        doc.save(`INV-${invoice.invoice_number}`);
       };
     } else {
-      doc.save("invoice.pdf");
+      doc.save(`INV-${invoice.invoice_number}`);
     }
   };
 
@@ -134,38 +146,53 @@ export default function Preview() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 text-black">
+    <div className="min-h-screen bg-black lg:flex justify-between w-full max-w-full lg:p-10 p-5">
 
-      <div className="max-w-2xl mx-auto bg-white p-8 border rounded-lg shadow">
 
+
+    <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-15 p-5 bg-mist-900 shadow-sm rounded-md hidden lg:block" id="sidebar">
+            <a href="#"><div className="flex items-center gap-2"><FileText size={15}/>Invoices</div></a>
+            <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
+    </div>  
+
+
+
+      <div className="max-w-8xl w-full bg-white text-black p-8 border rounded-lg shadow mt-15">
         <h1 className="text-2xl font-bold mb-6">
-          Invoice Preview
+          {invoice.invoice_number}
         </h1>
-
-        <p><b>From:</b> {invoice.user_name}</p>
-        <p><b>To:</b> {invoice.issued_to}</p>
+        <p><b>Client Name:</b> {invoice.client_name}</p>
+        <p><b>Client Mail:</b> {invoice.client_mail}</p>
 
         <hr className="my-4" />
-
-        {/* Items */}
-        {invoice.items.map((item, i) => {
-          const itemTotal =
-            Number(item.price) * Number(item.quantity);
-
-          return (
-            <div key={i} className="flex justify-between py-1 text-black">
-              <span>{item.name}</span>
-              <span>
-                {item.price} × {item.quantity} = {itemTotal}
-              </span>
-            </div>
-          );
-        })}
+            <table className="w-full text-black">
+            <thead>
+              <tr className="border-b text-stone-500 text-sm">
+                <th className="py-2 text-left">Name</th>
+                <th className="py-2 text-right">Price</th>
+                <th className="py-2 text-right">Quantity</th>
+                <th className="py-2 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoice.items.map((item: InvoiceItem, i: number) => {
+                const itemTotal = item.price * item.quantity;
+                return (
+                  <tr key={i} className="border-b last:border-0">
+                    <td className="py-2 text-left">{item.name}</td>
+                    <td className="py-2 text-right">{item.price}</td>
+                    <td className="py-2 text-right">{item.quantity}</td>
+                    <td className="py-2 text-right">{itemTotal} INR</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
 
         <hr className="my-4" />
 
         <h2 className="text-lg font-semibold">
-          Total: {invoice.total}
+          Total: {invoice.total} INR
         </h2>
 
         {/* QR */}

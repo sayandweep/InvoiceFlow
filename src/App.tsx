@@ -203,7 +203,7 @@ export default function Home() {
               name="client_mail"
               placeholder="Client Mail"
               onChange={handleChange}
-              className="p-3 rounded-md focus:outline-none border"
+              className="p-3 rounded-md focus:outline-none"
               required
             />
           </div>
@@ -221,7 +221,7 @@ export default function Home() {
                     handleItemChange(i, "name", e.target.value)
                   }
                   className="border p-3 rounded-md"
-                  required
+                  
                 />
   
                 <input
@@ -231,8 +231,8 @@ export default function Home() {
                   onChange={(e) =>
                     handleItemChange(i, "price", e.target.value)
                   }
-                  className="border p-3 rounded-md"
-                  required
+                  className="p-3 rounded-md"
+                  
                 />
   
                 <input
@@ -242,8 +242,8 @@ export default function Home() {
                   onChange={(e) =>
                     handleItemChange(i, "quantity", e.target.value)
                   }
-                  className="border p-3 rounded-md"
-                  required
+                  className="p-3 rounded-md"
+                  
                 />
   
               </div>
@@ -252,7 +252,7 @@ export default function Home() {
             <button
               type="button"
               onClick={addItem}
-              className="text-sm bg-stone-900 border border-black px-3 py-2 rounded-md w-fit hover:bg-black hover:text-white transition"
+              className="text-sm bg-mist-950 px-3 py-2 rounded-md w-fit hover:bg-black hover:text-white transition"
             >
               + Add Item
             </button>
@@ -267,7 +267,7 @@ export default function Home() {
             <input
               type="file"
               onChange={handleFile}
-              className="border p-2 rounded-md"
+              className="p-2 rounded-md"
             />
           </div>
   
@@ -301,35 +301,29 @@ export default function Home() {
 
             <tbody>
               {invoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b">
-
-                  <td className="py-4">
-                    {invoice.client_name}
-                  </td>
-
-                  <td className="py-4 hidden lg:table-cell">
-                    {invoice.items.map((item, i) => (
-                      <p key={i}>{item.name}</p>
-                    ))}
-                  </td>
-
-                  <td className="py-4 hidden lg:table-cell">
-                    {invoice.items.map((item, i) => (
-                      <p key={i}>{item.quantity}</p>
-                    ))}
-                  </td>
-
-                  <td className="py-4 font-medium">
-                    ₹{invoice.total}
-                  </td>
-
-                  <td className="py-4">
-                    <span className="px-3 py-1 rounded-full text-sm border border-rose-900 text-rose-700 cursor-pointer">
-                      {invoice.status || "unpaid"}
-                    </span>
-                  </td>
-
-                </tr>
+                  <tr key={invoice.id} className="border-b">
+                    <td className="py-4">
+                      {invoice.client_name}
+                    </td>
+                    <td className="py-4 hidden lg:table-cell">
+                      {invoice.items.map((item, i) => (
+                        <p key={i}>{item.name}</p>
+                      ))}
+                    </td>
+                    <td className="py-4 hidden lg:table-cell">
+                      {invoice.items.map((item, i) => (
+                        <p key={i}>{item.quantity}</p>
+                      ))}
+                    </td>
+                    <td className="py-4 font-medium">
+                      ₹{invoice.total}
+                    </td>
+                    <td className="py-4">
+                      <span className="px-3 py-1 rounded-full text-sm border border-rose-900 text-rose-700 cursor-pointer" onClick={() => {location.replace(`/preview/${invoice.id}`)}}>
+                        {invoice.status || "unpaid"}
+                      </span>
+                    </td>
+                  </tr>
               ))}
             </tbody>
 
