@@ -31,7 +31,7 @@ export function Navbar() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:5173/dashboard"
+        redirectTo: "https://invoicefolio.sayandweep.in/dashboard"
       }
     });
   };
