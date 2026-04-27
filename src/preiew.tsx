@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "./lib/supabase";
 import jsPDF from "jspdf";
 
-import { FileText, User} from 'lucide-react';
+import { FileText, LogIn, LogOut, User} from 'lucide-react';
 
 type Item = {
   name: string;
@@ -30,6 +30,40 @@ type InvoiceItem = {
 export default function Preview() {
   const { id } = useParams();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
+
+
+  // GOOGLE AUTH
+  const loginWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173"
+      }
+    });
+  };
+
+  // USER
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    getUser();
+  }, []);
+  
+  const getUser = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+  
+    setUser(user);
+  };
+
+  const logOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  }
+
+
+
+
 
   useEffect(() => {
     fetchInvoice();
@@ -125,7 +159,7 @@ export default function Preview() {
       img.src = invoice.qr_url;
   
       img.onload = () => {
-        doc.addImage(img, "PNG", 20, y + 5, 50, 50);
+        doc.addImage(img, "PNG", 20, y + 5, 100, 100);
         doc.save(`INV-${invoice.invoice_number}`);
       };
   
@@ -136,6 +170,8 @@ export default function Preview() {
       doc.save(`INV-${invoice.invoice_number}`);
     }
   };
+
+  
 
   if (!invoice) {
     return (
@@ -150,10 +186,11 @@ export default function Preview() {
 
 
 
-    <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-15 p-5 bg-mist-900 shadow-sm rounded-md hidden lg:block" id="sidebar">
-            <a href="#"><div className="flex items-center gap-2"><FileText size={15}/>Invoices</div></a>
-            <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
-    </div>  
+        <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-15 p-5 bg-mist-900 shadow-sm rounded-md hidden lg:block" id="sidebar">
+        <a href="/dashboard"><div className="flex items-center gap-2"><FileText size={15}/>Dashboard</div></a>
+        <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
+        {user ? (<button onClick={logOut}><div className="flex items-center gap-2"><LogOut  size={15}/>Logout</div></button>) : (<button onClick={loginWithGoogle}><div className="flex items-center gap-2"><LogIn size={15}/>Signup</div></button>)}
+        </div>
 
 
 

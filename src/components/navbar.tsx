@@ -1,10 +1,15 @@
+import { Button } from "@/components/ui/button"
 import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent
-} from "@/components/ui/navigation-menu"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { NavigationMenu } from '@/components/ui/navigation-menu'
 
 import {
   Tooltip,
@@ -14,29 +19,64 @@ import {
 } from "@/components/ui/tooltip"
 
 import { CircleQuestionMark } from 'lucide-react';
+import { supabase } from "@/lib/supabase";
+import {useState, useEffect} from 'react'
 
 export function Navbar() {
+
+
+
+
+  const loginWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173/dashboard"
+      }
+    });
+  };
+
+  // USER
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    getUser();
+  }, []);
+  
+  const getUser = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+  
+    setUser(user);
+  };
+
+  const logOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  }
+
+
+
   return (
-    <NavigationMenu className='lg:px-10 lg:py-8 lg:rounded-none text-white max-w-full w-full h-16 fixed top-0 left-0 z-50 p-5 bg-mist-900/70 backdrop-blur-sm'>
+    <NavigationMenu className='lg:px-10 lg:py-8 lg:rounded-none text-white max-w-full w-full h-16 fixed top-0 z-50 p-5 bg-mist-900/70 backdrop-blur-sm'>
       <div className="flex items-center justify-between w-full">
         <Logo />
         
         {/* SMALL MENU */}
-        <NavigationMenuList className="flex items-center justify-between lg:hidden">
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
-              <NavigationMenuContent className="rounded-b-none">
-                <ul className="w-80 max-w-full">
-                  <li>
-                    Invoices
-                  </li>
-                  <li>
-                    Clients
-                  </li>
-                </ul>
-              </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
+        <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="lg:hidden">Option</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="mr-5">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>SERVIICE</DropdownMenuLabel>
+          <DropdownMenuItem>Invoice</DropdownMenuItem>
+          <DropdownMenuItem>Clients Managment</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        {user ? <DropdownMenuItem onClick={logOut}>Logout</DropdownMenuItem> : <DropdownMenuItem onClick={loginWithGoogle}>Login</DropdownMenuItem>}
+      </DropdownMenuContent>
+    </DropdownMenu>
 
         {/* LARGE MENU */}
         <div className="absolute top-0 left-0 hidden lg:block lg:relative"><Lgmenu/></div>

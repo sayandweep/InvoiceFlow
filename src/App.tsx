@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { FileText, User} from 'lucide-react';
+import { FileText, LogIn, User, LogOut} from 'lucide-react';
 
 type Item = {
   name: string;
@@ -58,9 +58,20 @@ export default function Home() {
   }, []);
 
   const fetchInvoices = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+  
+    if (!user) {
+      setInvoices([]);
+      setInvoicesLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("invoices")
       .select("*")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -75,11 +86,7 @@ export default function Home() {
 
 
 
-
-
-
-
-
+  //  HANDLE
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -103,26 +110,43 @@ export default function Home() {
     if (file) setForm({ ...form, qrFile: file });
   };
 
+  
+  
   const uploadQR = async () => {
-    if (!form.qrFile) return null;
-
-    const fileName = Date.now() + "_" + form.qrFile.name;
-
-    const { error } = await supabase.storage
-      .from("qr-images")
-      .upload(fileName, form.qrFile);
-
-    if (error) {
-      alert(error.message);
+    if (!form.qrFile) {
+      alert("No file selected");
       return null;
     }
-
-    const { data } = supabase.storage
+  
+    const fileName = `${Date.now()}_${form.qrFile.name}`;
+  
+    console.log("Uploading file:", fileName);
+  
+    const { data, error } = await supabase.storage
+      .from("qr-images")
+      .upload(fileName, form.qrFile, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+  
+    console.log("UPLOAD RESULT:", data, error);
+  
+    if (error) {
+      alert(error.message);
+      console.error("Upload error:", error);
+      return null;
+    }
+  
+    const { data: publicUrlData } = supabase.storage
       .from("qr-images")
       .getPublicUrl(fileName);
-
-    return data.publicUrl;
+  
+    console.log("PUBLIC URL:", publicUrlData.publicUrl);
+  
+    return publicUrlData.publicUrl;
   };
+
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,11 +158,18 @@ export default function Home() {
     );
 
     const qrUrl = await uploadQR();
+    console.log("QR URL:", qrUrl);
 
+
+
+
+
+    // REAL BAAL
     const { data, error } = await supabase
       .from("invoices")
       .insert([
         {
+          user_id: user?.id,
           invoice_number: invoiceNumber,
           client_name: form.client_name,
           client_mail: form.client_mail,
@@ -149,7 +180,6 @@ export default function Home() {
       ])
       .select()
       .single();
-
     setSubmitting(false);
 
     if (error) {
@@ -160,10 +190,47 @@ export default function Home() {
     navigate(`/preview/${data.id}`);
   };
 
+
+  // GOOGLE AUTH
+  const loginWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173/dashboard"
+      }
+    });
+  };
+
+  // USER
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    getUser();
+  }, []);
+  
+  const getUser = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+  
+    setUser(user);
+  };
+
+  const logOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  }
+
+
+  // INVOICE LOADING
   if (invoicesLoading) {
     return (
-      <p className="text-center mt-10">Loading...</p>
+      <p className="text-center text-6xl mt-30">pls wait :)</p>
     )
+  }
+
+  // REDIRECT
+  if (!user) {
+    location.replace('/');
   }
 
   return (
@@ -173,9 +240,11 @@ export default function Home() {
 
       {/* LARGE MENU */}
       <div className="lg:w-full lg:max-w-50 lg:mr-5 mt-5 p-5 bg-mist-900 shadow-sm rounded-md hidden lg:block" id="sidebar">
-        <a href="#"><div className="flex items-center gap-2"><FileText size={15}/>Invoices</div></a>
+        <a href="/dashboard"><div className="flex items-center gap-2"><FileText size={15}/>Dashboard</div></a>
         <a href="#"><div className="flex items-center gap-2"><User size={15}/>Clients</div></a>
+        {user ? (<button onClick={logOut}><div className="flex items-center gap-2"><LogOut  size={15}/>Logout</div></button>) : (<button onClick={loginWithGoogle}><div className="flex items-center gap-2"><LogIn size={15}/>Signup</div></button>)}
       </div>
+
 
 
 
@@ -275,7 +344,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-linear-to-tr from-green-800 to-green-400 text-white py-3 rounded-md hover:opacity-90 transition"
+            className="bg-green-400 text-black py-3 rounded-md hover:opacity-90 transition"
           >
             {submitting ? "Saving..." : "Create Invoice"}
           </button>
